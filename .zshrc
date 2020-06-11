@@ -39,7 +39,7 @@ source ~/.aliases.sh
 
 source ~/.env.sh
 
-source /usr/share/z/z.sh
+[[ -f /usr/share/z/z.sh ]] && source /usr/share/z/z.sh
 
 
 # Wasienv
