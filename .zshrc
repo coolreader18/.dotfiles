@@ -29,6 +29,7 @@ plugins=(
   cp                   
   # nim                  
   asdf
+  archlinux
 )                      
 
 source $ZSH/oh-my-zsh.sh
@@ -38,6 +39,9 @@ compinit
 source ~/.aliases.sh
 
 source ~/.env.sh
+
+fpath=($fpath ~/.zfuncs)
+autoload shitpost
 
 [[ -f /usr/share/z/z.sh ]] && source /usr/share/z/z.sh
 
@@ -49,3 +53,7 @@ export WASIENV_DIR="/home/coolreader18/.wasienv"
 export WASMTIME_HOME="$HOME/.wasmtime"
 
 export PATH="$WASMTIME_HOME/bin:$PATH"
+
+# Wasmer
+export WASMER_DIR="/home/coolreader18/.wasmer"
+[ -s "$WASMER_DIR/wasmer.sh" ] && source "$WASMER_DIR/wasmer.sh"

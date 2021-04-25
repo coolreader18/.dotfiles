@@ -150,7 +150,7 @@ upgrade-all() {
 alias gsta="git stash"
 
 md2ps() {
-  cat -- "$@" | pandoc -f markdown -t ms | groff -ms
+  cat -- "$@" | pandoc -f markdown -t pdf | pdf2ps - -
 }
 
 fix_time() {
@@ -172,3 +172,25 @@ torrents() {
     target/release/torrents-csv-service
   }
 }
+
+alias vim='vim -p'
+alias serve='serve -n'
+
+farquaad() {
+  shitpost -f ~/Pictures/farquaad.png -b "$1" -o - | pngcopy
+}
+
+pngpaste() {
+  xclip -selection clipboard -target image/png -out
+}
+pngcopy() {
+  xclip -selection clipboard -target image/png -in
+}
+
+fix_net() {
+  sudo modprobe -r rtw88_8822ce && \
+    sudo modprobe rtw88_8822ce && \
+    sudo systemctl restart wpa_supplicant wpa_supplicant@wlp4s0.service
+}
+
+alias shfmt='shfmt -ci -i 2'
