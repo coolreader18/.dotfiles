@@ -45,7 +45,7 @@ add-types() {
   done
 }
 
-eval "$(hub alias -s)"
+command -v hub >/dev/null && eval "$(hub alias -s)"
 
 alias url_hostname="grep '\w+\:\/\/\K[^\/]+' -oP"
 
@@ -380,3 +380,5 @@ view_dupdeps() {
     cargo depgraph "$@" | gvpr -f ~/dupdeps.gvpr | xdot -
   fi
 }
+
+alias rsync='rsync --progress'
