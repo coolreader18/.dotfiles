@@ -3,13 +3,13 @@ call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-commentary'
 Plug 'cespare/vim-toml'
 Plug 'vim-syntastic/syntastic'
-Plug 'rust-lang/rust.vim'
-Plug 'Quramy/tsuquyomi'
+Plug 'rust-lang/rust.vim', { 'for': ['rust'] }
+Plug 'Quramy/tsuquyomi', { 'for': ['javascript', 'typescript'] }
 Plug 'jason0x43/vim-js-indent'
 Plug 'tpope/vim-sleuth'
-Plug 'elmcast/elm-vim'
+Plug 'elmcast/elm-vim', { 'for': ['elm'] }
 Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'for': ['javascript', 'typescript', 'markdown', 'html'] }
-Plug 'ycm-core/YouCompleteMe', { 'do': './install.py' }
+Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --ts-completer --rust-completer' }
 Plug 'farmergreg/vim-lastplace'
 Plug 'kelwin/vim-smali'
 Plug 'godlygeek/tabular'
