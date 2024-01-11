@@ -1,0 +1,33 @@
+[hub]
+	protocol = ssh
+[user]
+	signingkey = 7F9F7DB1768C59CF
+	email = coolreader18@gmail.com
+	name = Noa
+[commit]
+	gpgSign = true
+[gpg]
+	program = gpg2
+[pull]
+	rebase = true
+[color]
+	ui = auto
+[core]
+	excludesFile = /home/coolreader18/.global_gitignore
+[includeIf "gitdir:~/redox/"]
+	path = ~/redox/.gitconfig
+[includeIf "gitdir:~/school/"]
+	path = ~/school/.gitconfig
+[sendemail]
+	from = Noa <coolreader18@gmail.com>
+	suppresscc = all
+[include]
+	path = .gitconfig.d/smtp
+[init]
+	defaultBranch = main
+[rebase]
+	autoSquash = true
+[merge]
+	conflictstyle = diff3
+[stash]
+	showIncludeUntracked = true

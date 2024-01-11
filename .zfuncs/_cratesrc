@@ -1,0 +1,12 @@
+#compdef cratesrc
+
+case $CURRENT in
+  2)
+    local comps=( $(cratesrc --names) )
+    compadd -a comps
+    ;;
+  3)
+    local comps=( $(cratesrc --versions $words[2]) )
+    compadd -o numeric -a comps
+    ;;
+esac

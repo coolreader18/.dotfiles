@@ -1,4 +1,3 @@
-#autoload
 #someone on /r/linuxmasterrace asked what image programs were good for shitposts
 #it got me thinking that there should be a cli command just for that
 #days later (I'm still pretty noob)...
@@ -68,7 +67,6 @@ if [ ! -z "$@" ]
 fi
 
 #Get some info on the file path etc
-path=${image_file%/*} 
 base=${image_file##*/}
 fext=${base##*.}
 pref=${base%.*}
@@ -87,8 +85,8 @@ convert -resize 1024x1024\< "$image_file" "$tmpdir"/shitpost-temp-resize.png
 #Get the height and width of the image to use later to size the overlays. Clipped height keeps things locked in the top and bottom fifth of the image.
 image_width=$(identify -format "%[width]" "$tmpdir"/shitpost-temp-resize.png)
 image_height=$(identify -format "%[height]" "$tmpdir"/shitpost-temp-resize.png)
-clipped_height=$(($image_height/5))
-stroke_width=$(($clipped_height/40))
+clipped_height=$((image_height/5))
+stroke_width=$((clipped_height/40))
 
 printf >&2 "Working"
 

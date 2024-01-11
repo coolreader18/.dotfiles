@@ -1,0 +1,54 @@
+#!/usr/bin/zsh
+
+__cratesrc() (
+set -e
+
+REGISTRY=index.crates.io-6f17d22bba15001f
+CRATE_SRC=${CARGO_HOME:-~/.cargo}/registry/src/$REGISTRY
+
+split_version() {
+  awk 'i=match($0, /-[0-9]+\./) { print substr($0, 0, i-1), substr($0, i+1) }'
+}
+
+get_crates() (
+  cd $CRATE_SRC
+  local crates
+  crates=(*)
+  split_version <<<${(F)crates}
+)
+
+get_cratenames() {
+  get_crates | cut -d' ' -f1
+}
+
+get_versions() {
+  get_crates | awk -v "crate=$1" '$1==crate { print $2 }'
+}
+
+case $1 in
+  names) get_cratenames ;;
+  versions) get_versions "$2" ;;
+  find)
+    [[ $# -eq 1 ]] && { echo >&2 "no crate"; return 1; }
+    local cratename=$2 version
+    if [[ $# -gt 2 ]]; then
+      version=$3
+    else
+      local versions=( ${(nO)$(get_versions $cratename)} )
+      [[ ${#versions} -eq 0 ]] && { echo >&2 "no such crate"; return 1; }
+      version=$versions[1]
+    fi
+    echo "$CRATE_SRC/$cratename-$version"
+  ;;
+esac
+)
+
+cratesrc() {
+  case $1 in
+    --names) __cratesrc names || return $? ;;
+    --versions) __cratesrc versions "$2" || return $? ;;
+    *) cd $(__cratesrc find $@) ;;
+  esac
+}
+
+cratesrc $@

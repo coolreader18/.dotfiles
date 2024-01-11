@@ -1,0 +1,7 @@
+#compdef rustsrc
+
+case $CURRENT in
+  2)
+    _files -W ~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/library
+    ;;
+esac

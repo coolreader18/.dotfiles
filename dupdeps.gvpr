@@ -1,0 +1,115 @@
+#!/usr/bin/gvpr -f
+# vim: set ft=gvpr autoindent:
+BEGIN {
+  edge_t ine[];
+  int color_i = 2;
+  string color_map[string];
+  void addRec(graph_t g, node_t n, int depth) {
+    subnode(g, n);
+    for (ine[depth] = fstin(n); ine[depth]; ine[depth] = nxtin(ine[depth])) {
+      node_t o = opp(ine[depth], n);
+      if (!isSubnode(g, o)) addRec(g, o, depth + 1);
+    }
+  }
+
+  string depname;
+  string depver;
+
+  int getFields(string lbl) {
+    string _fields[int];
+    if (split(lbl, _fields) > 1) {
+      depname = _fields[0];
+      depver = _fields[1];
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  int getElement(int indx) {
+    int value = indx - 1;
+    int v = 0;
+    int i;
+    for (i = 0; i < 8; i++) {
+        v = v | (value & 1);
+        v <<= 1;
+        value >>= 1;
+    }
+    v >>= 1;
+    return v & 0xFF;
+  }
+
+  string getPattern(int ind) {
+    int n = (int)pow(ind, 1.0/3.0);
+    ind -= (n*n*n);
+    int p[int];
+    p[0] = p[1] = p[2] = n;
+    if (ind != 0) {
+      ind--;
+      int v = ind % 3;
+      ind = ind / 3;
+      if (ind < n) {
+        p[v] = ind % n;
+      } else {
+        ind -= n;
+        p[v      ] = ind / n;
+        p[++v % 3] = ind % n;
+      }
+    }
+    return sprintf("#%.02x%.02x%.02x", getElement(p[0]), getElement(p[1]), getElement(p[2]));
+  }
+
+  int intcmp(int a, int b) {
+    return a < b ? -1 : (a > b ? 1 : 0);
+  }
+
+  int versionCmp(string a, string b) {
+    string fieldsa[int];
+    string fieldsb[int];
+    split(a, fieldsa, ".");
+    split(b, fieldsb, ".");
+    int veri;
+    int cmpRet = 0;
+    for (veri = 0; cmpRet == 0 && veri < # fieldsa && veri < # fieldsb; veri++)
+    {
+      if (match(fieldsa[veri], "[^0-9]") != -1 || match(fieldsb[veri], "[^0-9]") != -1) {
+        cmpRet = strcmp(fieldsa[veri], fieldsb[veri]);
+      } else {
+        cmpRet = intcmp(fieldsa[veri], fieldsb[veri]);
+      }
+    }
+    if (cmpRet == 0) cmpRet = intcmp(#fieldsa, #fieldsb);
+    return cmpRet;
+  }
+}
+BEG_G {
+  graph_t d = subg($G, "dups");
+  string fields[int];
+  string deps[int];
+  string highestdep[string];
+}
+N [getFields($.label)] {
+  if (!(depname in highestdep) || versionCmp(depver, highestdep[depname]) > 0) {
+    highestdep[depname] = depver;
+  }
+}
+BEG_G {
+  graph_t highests = subg($G, "highests");
+}
+N [getFields($.label) ] {
+  if (!(depname in color_map)) color_map[depname] = getPattern(color_i++);
+  $.color = color_map[depname];
+  if (!$.style) $.style = "filled";
+  $.shape = "diamond";
+  if (strcmp(depver, highestdep[depname]) != 0) {
+    addRec(d, $);
+  } else {
+    subnode(highests, $);
+  }
+}
+END_G {
+  induce(d);
+  induce(highests);
+  clone(d, highests);
+  $O = d;
+}
