@@ -1,0 +1,29 @@
+#!/usr/bin/zsh
+
+setopt errexit pipefail
+fmt=''
+declare -A fmtopts=( ['Short Time']=t ['Long Time']=T ['Short Date']=d ['Long Date']=D ['Short Date+Time']=f ['Long Date+Time']=F [Relative]=R )
+case $1 in
+  -t|-T|-d|-D|-f|-F|-R)
+    fmt=":${1#-}"
+    shift
+    ;;
+  -g)
+    shift $#
+    output=$(yad \
+      --title='Discord Timestamp' --width=300 --form \
+      --field='Time' '' \
+      --field='Format:CB' "\!${(kj:\!:)fmtopts}")
+    echo "$output"
+    1="${${(s:|:)output}[1]}"
+    fmt="${${(s:|:)output}[2]}"
+    [[ -n $fmt ]] && fmt=":${fmtopts[$fmt]}"
+    ;;
+esac
+if [[ $# -lt 1 ]]; then
+  echo "Missing time argument" >&2
+  return 1
+fi
+output=$(IFS=' ' date +"<t:%s$fmt>" -d "$*")
+echo "$output -> $(date +%c -d "$*")"
+echo -n "$output" | xclip -in -selection clipboard

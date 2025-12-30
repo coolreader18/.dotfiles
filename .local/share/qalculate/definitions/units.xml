@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<QALCULATE version="5.8.2">
+  <category>
+    <title>Volume</title>
+    <category>
+      <title>Cooking</title>
+      <unit type="alias">
+        <title>Teaspoon</title>
+        <names>r:teaspoon,p:teaspoons,a-c:tsp</names>
+        <base>
+          <unit>cup</unit>
+          <relation>1/16</relation>
+          <exponent>1</exponent>
+        </base>
+      </unit>
+      <unit type="alias">
+        <title>Tablespoon</title>
+        <names>r:tablespoon,p:tablespoons,a-c:tbsp</names>
+        <base>
+          <unit>teaspoon</unit>
+          <relation>3</relation>
+          <exponent>1</exponent>
+          <mix>1</mix>
+        </base>
+      </unit>
+    </category>
+  </category>
+</QALCULATE>

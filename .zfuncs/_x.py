@@ -1,0 +1,1 @@
+../../../rust/src/etc/completions/x.py.zsh

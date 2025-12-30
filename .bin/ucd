@@ -1,0 +1,129 @@
+#!/usr/bin/env python
+
+import unicodedata
+import subprocess
+import tempfile
+import argparse
+import sys
+import functools
+
+
+def charname(ch, category=False):
+    return (
+        f"U+{ord(ch):0>4X} "
+        + unicodedata.name(ch, "UNKNOWN CHARACTER NAME")
+        + (f" ({unicodedata.category(ch)})" if category else "")
+    )
+
+
+def fmt_char_parts(string, category=False):
+    return [
+        (
+            charname(ch, category=category),
+            (" " if unicodedata.combining(ch) else "") + ch,
+        )
+        for ch in string
+    ]
+
+
+def get_padding(parts):
+    return max(len(chname) for chname, _ in parts)
+
+
+def render_chars(parts, padding):
+    return "".join(
+        (chname + ":").ljust(padding) + "\t" + ch + "\n" for chname, ch in parts
+    )
+
+
+def fmt_chars(string, category=False):
+    parts = fmt_char_parts(string, category)
+    padding = get_padding(parts)
+    return render_chars(parts, padding)
+
+
+def mktemp(contents, **kwargs):
+    if "mode" not in kwargs and isinstance(contents, str):
+        kwargs["mode"] = "w+t"
+    fp = tempfile.NamedTemporaryFile(**kwargs)
+    try:
+        fp.write(contents)
+        fp.flush()
+        return fp
+    except:
+        fp.close()
+        raise
+
+
+def diff_strings(strings, category=False):
+    if len(strings) != 2:
+        err_exit("-d/--diff expects exactly two arguments")
+    partss = [fmt_char_parts(x, category) for x in strings]
+    padding = get_padding(itertool.chain(partss))
+    a_fmt, b_fmt = (render_chars(parts, padding) for parts in partss)
+    with (
+        mktemp(a_fmt) as a_file,
+        mktemp(b_fmt) as b_file,
+    ):
+        proc = subprocess.run(
+            [
+                "diff",
+                "--color",
+                f"-u{len(a)+len(b)}",
+                a_file.name,
+                "--label=string_a",
+                b_file.name,
+                "--label=string_b",
+            ]
+        )
+        if proc.returncode == 0:
+            print("Both strings are identical:")
+            print(a_fmt, end="")
+        elif proc.returncode > 1:
+            proc.check_returncode()
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Given a string of unicode characters, lookup each of their names"
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("string", nargs="*", default=[])
+    group.add_argument(
+        "-l",
+        dest="lookup",
+        metavar="NAME",
+        nargs="+",
+        help="Lookup unicode character(s) by name",
+    )
+    parser.add_argument("-d", "--diff", action="store_true")
+    parser.add_argument("-c", "--category", action="store_true")
+
+    args = parser.parse_args()
+
+    if args.lookup is not None:
+        try:
+            print(*(unicodedata.lookup(l) for l in args.lookup), sep='', end='')
+        except LookupError as e:
+            err_exit(e)
+    else:
+        if args.diff:
+            diff_strings(args.string, args.category)
+        else:
+            print(
+                *(fmt_chars(s, args.category) for s in args.string),
+                sep="\n",
+                end="",
+            )
+
+
+def err_exit(e):
+    print(f"ucd: {e}", file=sys.stderr)
+    exit(getattr(e, "returncode", 1))
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except subprocess.CalledProcessError as e:
+        err_exit(e)

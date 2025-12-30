@@ -13,7 +13,7 @@ fi
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-alias ip='ip -c'
+alias ip='ip -c=auto'
 
 # some more ls aliases
 alias ll='ls -alF'
@@ -82,8 +82,6 @@ play-music() {
 
 alias code.='code .'
 
-alias cargo-install.="cargo install -f --offline --path ."
-
 alias edmicro=EDITOR=micro
 alias edcat=EDITOR=cat
 
@@ -142,16 +140,11 @@ gh_get_field() {
 }
 
 # git aliases
-alias grorigin='git reset --hard origin/$(git_current_branch)'
-alias gsta="git stash"
 alias gsw-="git switch -"
 alias grbim='git rebase -i $(git_main_branch)'
 alias gbm='git branch -m'
 alias gbm.='git branch -m $(git_current_branch)'
-gsync() {
-  git pull upstream $(git_current_branch)
-  gp
-}
+alias gsync='gluc && gp'
 
 upgrade-all() {
   paru
@@ -164,6 +157,7 @@ md2ps() {
 }
 
 fix_time() {
+  setopt localoptions err_return pipefail
   sudo timedatectl set-ntp false
   local timespec
   timespec=${1:-$(curl -Ss "http://worldtimeapi.org/api/ip" | jq -r '.datetime')}
@@ -301,11 +295,6 @@ vpn() {
       ;;
   esac
 }
-piavpn() {
-  local _vpnname=pia_us_chicago
-  vpn "$@"
-  return $?
-}
 
 alias whatsmyip='curl https://httpbin.org/ip'
 
@@ -377,8 +366,81 @@ view_dupdeps() {
   if (($@[(Ie)--help])); then
     cargo depgraph "$@"
   else
-    cargo depgraph "$@" | gvpr -f ~/dupdeps.gvpr | xdot -
+    crategraph "$@" | gvpr -f ~/dupdeps.gvpr | xdot -
   fi
 }
 
+crategraph() {
+  if (($@[(Ie)--help])); then
+    cargo depgraph "$@"
+  else
+    cargo depgraph "$@" | gvpr 'BEG_G { setDflt($G, "N", "fontname", "Fira Sans"); $O=$G }' | maybe_xdot
+  fi
+}
+
+xdot() {
+  setopt localoptions nomonitor
+  if [[ $? -eq 0 ]]; then
+    command xdot - &!
+  else
+    command xdot "$@"
+  fi
+}
+
+maybe_xdot() {
+  if [[ -t 1 ]]; then
+    xdot &!
+  else
+    cat
+  fi
+}
+
+copydot() {
+  dot -Tpng | pngcopy
+}
+
 alias rsync='rsync --progress'
+
+alias adb_escape='adb shell input keyevent 82'
+
+alias regen_pacmirrors='sudo systemctl start --wait reflector'
+
+f2c() {
+  qalc "$1 fahrenheit to celsius"
+}
+
+c2f() {
+  qalc "$1 celsius to fahrenheit"
+}
+
+print_crossword() {
+  local puzzle_id
+  puzzle_id=$(curl -fsSL "https://www.nytimes.com/svc/crosswords/v2/oracle/daily.json" | jq '.results.current.puzzle_id')
+  xo "https://www.nytimes.com/svc/crosswords/v2/puzzle/$puzzle_id.pdf?block_opacity=30"
+}
+
+cps() {
+  local sec=${1:-25}
+  local persec=${2:-100}
+  xdotool click --repeat "$(($sec * $persec))" --delay $((1000 / $persec)) 1
+}
+
+infertz() {
+  sudo timedatectl set-timezone "$(curl -sSf https://ipapi.co/timezone)"
+}
+settz() {
+  local tz="$1"
+  case "$tz" in
+    east) tz=America/Detroit ;;
+    central) tz=America/Chicago ;;
+  esac
+  sudo timedatectl set-timezone "$tz"
+}
+
+reflect() {
+  sudo systemctl start reflector
+}
+
+fix_lightdm() {
+  sudo systemctl restart lightdm; exit
+}

@@ -12,13 +12,16 @@ ZSH_THEME=
 
 eval "$(starship init zsh)"
 
-ASDF_DIR=/opt/asdf-vm/
+export ASDF_DIR=/opt/asdf-vm/
+export ASDF_DATA_DIR=~/.asdf
+path=($ASDF_DATA_DIR/shims $path)
 
 plugins=(
   git
   node
   yarn
   github
+  gh
   # command-not-found
   rust
   man
@@ -31,6 +34,8 @@ plugins=(
   archlinux
   ipfs
   # gcloud
+  vscode
+  gradle
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -38,6 +43,8 @@ source $ZSH/oh-my-zsh.sh
 fpath=($fpath ~/.zfuncs)
 autoload ~/.zfuncs/*
 
+autoload -Uz compinit
+# rm ~/.zcompdump to reload
 compinit
 
 source ~/.aliases.sh
@@ -45,3 +52,6 @@ source ~/.aliases.sh
 source ~/.env.sh
 
 [[ -f /usr/share/z/z.sh ]] && source /usr/share/z/z.sh
+
+# The following lines were added by compinstall
+zstyle :compinstall filename '/home/coolreader18/.zshrc'

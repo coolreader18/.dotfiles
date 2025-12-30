@@ -7,6 +7,6 @@ case $CURRENT in
     ;;
   3)
     local comps=( $(cratesrc --versions $words[2]) )
-    compadd -o numeric -a comps
+    compadd -V versions -a comps
     ;;
 esac

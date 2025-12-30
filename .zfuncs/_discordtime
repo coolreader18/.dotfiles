@@ -1,0 +1,11 @@
+#compdef discordtime
+
+_arguments : \
+  '(-)-t[short time]' \
+  '(-)-T[long time]' \
+  '(-)-d[short date]' \
+  '(-)-D[long date]' \
+  '(-)-f[short datetime]' \
+  '(-)-F[long datetime]' \
+  '(-)-R[relative]' \
+  '*:: :'

@@ -3,7 +3,7 @@
 __cratesrc() (
 set -e
 
-REGISTRY=index.crates.io-6f17d22bba15001f
+REGISTRY=index.crates.io-1949cf8c6b5b557f
 CRATE_SRC=${CARGO_HOME:-~/.cargo}/registry/src/$REGISTRY
 
 split_version() {
@@ -22,7 +22,7 @@ get_cratenames() {
 }
 
 get_versions() {
-  get_crates | awk -v "crate=$1" '$1==crate { print $2 }'
+  get_crates | awk -v "crate=$1" '$1==crate { print $2 }' | sort -V
 }
 
 case $1 in

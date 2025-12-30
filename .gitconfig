@@ -14,6 +14,7 @@
 	ui = auto
 [core]
 	excludesFile = /home/coolreader18/.global_gitignore
+	whitespace = cr-at-eol
 [includeIf "gitdir:~/redox/"]
 	path = ~/redox/.gitconfig
 [includeIf "gitdir:~/school/"]
@@ -31,3 +32,18 @@
 	conflictstyle = diff3
 [stash]
 	showIncludeUntracked = true
+[credential]
+	helper = libsecret
+
+[diff "json"]
+	command = json-diff-driver
+
+[merge "mergiraf"]
+    name = mergiraf
+    driver = mergiraf merge --git %O %A %B -s %S -x %X -y %Y -p %P -l %L
+
+[alias]
+    # Difftastic aliases, so `git dlog` is `git log` with difftastic and so on.
+    dlog = -c diff.external=difft log --ext-diff
+    dshow = -c diff.external=difft show --ext-diff
+    ddiff = -c diff.external=difft diff

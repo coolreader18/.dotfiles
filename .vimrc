@@ -3,13 +3,13 @@ call plug#begin('~/.vim/plugged')
 Plug 'tpope/vim-commentary'
 Plug 'cespare/vim-toml'
 Plug 'vim-syntastic/syntastic'
-Plug 'rust-lang/rust.vim', { 'for': ['rust'] }
+" Plug 'rust-lang/rust.vim', { 'for': ['rust'] }
 Plug 'Quramy/tsuquyomi', { 'for': ['javascript', 'typescript'] }
 Plug 'jason0x43/vim-js-indent'
 Plug 'tpope/vim-sleuth'
 Plug 'elmcast/elm-vim', { 'for': ['elm'] }
 Plug 'prettier/vim-prettier', { 'do': 'yarn install', 'for': ['javascript', 'typescript', 'markdown', 'html'] }
-Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --ts-completer --rust-completer' }
+" Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --ts-completer --rust-completer' }
 Plug 'farmergreg/vim-lastplace'
 Plug 'kelwin/vim-smali'
 Plug 'godlygeek/tabular'
@@ -19,7 +19,7 @@ Plug 'bfrg/vim-jq'
 call plug#end()
 
 let g:rustfmt_autosave = 1
-let g:rust_cargo_avoid_whole_workspace = 0
+autocmd BufWrite *.rs YcmCompleter Format
 
 let g:syntastic_mode_map = { "mode": "passive" }
 
@@ -71,3 +71,8 @@ function! s:TableFormat()
     call setpos('.', l:pos)
 endfunction
 command! -buffer TableFormat call s:TableFormat()
+
+cmap w!! w !sudo tee > /dev/null %
+
+" nnoremap <expr> j v:count ? 'j' : 'gj'
+" nnoremap <expr> k v:count ? 'k' : 'gk'
