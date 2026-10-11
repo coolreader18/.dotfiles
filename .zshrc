@@ -20,7 +20,7 @@ plugins=(
   git
   node
   yarn
-  github
+  # github
   gh
   # command-not-found
   rust

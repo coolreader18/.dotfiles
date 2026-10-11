@@ -428,19 +428,12 @@ cps() {
 infertz() {
   sudo timedatectl set-timezone "$(curl -sSf https://ipapi.co/timezone)"
 }
+declare -A _tznames=([east]=America/Detroit [central]=America/Chicago)
 settz() {
-  local tz="$1"
-  case "$tz" in
-    east) tz=America/Detroit ;;
-    central) tz=America/Chicago ;;
-  esac
-  sudo timedatectl set-timezone "$tz"
+  sudo timedatectl set-timezone "${_tznames[$1]:$1}"
 }
+compdef '_values "" ${(k)_tznames}' settz
 
 reflect() {
   sudo systemctl start reflector
-}
-
-fix_lightdm() {
-  sudo systemctl restart lightdm; exit
 }

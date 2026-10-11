@@ -19,7 +19,7 @@ Plug 'bfrg/vim-jq'
 call plug#end()
 
 let g:rustfmt_autosave = 1
-autocmd BufWrite *.rs YcmCompleter Format
+" autocmd BufWrite *.rs YcmCompleter Format
 
 let g:syntastic_mode_map = { "mode": "passive" }
 
